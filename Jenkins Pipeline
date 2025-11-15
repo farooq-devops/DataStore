@@ -1,15 +1,10 @@
 pipeline {
     agent any
 
-    stages {
-        stage('checkout') {
+    stages{
+        stage(Checkout") {
             steps {
-                checkout scmGit(
-                    branches: [[name: '*/master']],
-                    extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/farooq-devops/DataStore.git']]
-                )
-            }
+            checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farooq-devops/DataStore.git']])}
         }
     }
 }
