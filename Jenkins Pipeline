@@ -24,5 +24,23 @@ pipeline {
         """
       }
     }
+    stage('SonarQube Analysis') {
+         steps {
+            withSonarQubeEnv('SonarQubeServerName') {
+          sh "mvn clean package sonar:sonar \
+          -Dsonar.projectKey=MyProjectKey \
+          -Dsonar.host.url=http://<sonar-host>:9000 \
+          -Dsonar.login=${env.SONAR_TOKEN}"
+    }
+  }
+}
+    stage('Quality Gate') {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          waitForQualityGate abortPipeline: true
+    }
+  }
+}
+
 }
 }
