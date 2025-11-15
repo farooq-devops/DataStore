@@ -15,32 +15,29 @@ pipeline {
              """
         }
     }
-     stage("Execute Testcases") {
-      steps {
-        sh """
+      stage("Execute Testcases") {
+        steps {
+         sh """
           echo "-------- Executing Testcases --------"
           mvn test
           echo "-------- Testcases Execution Complete --------"
-        """
+          """
       }
     }
-    stage('SonarQube Analysis') {
-         steps {
-            withSonarQubeEnv('sonarqube') {
-          sh "mvn clean package sonar:sonar \
-          -Dsonar.projectKey=MyProjectKey \
-          -Dsonar.host.url=http://localhost:9000 \
-          -Dsonar.login=${env.SONAR_TOKEN}"
+      stage("static code analisys") {
+       steps{
+         script {
+            def SonarQubecredentialsId = 'sonarqube'
+            staticCodeAnalysis(SonarQubecredentialsId)
+          }
+        }
     }
-  }
-}
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 2, unit: 'MINUTES') {
-          waitForQualityGate abortPipeline: true
+      stage("Quality Gate") {
+       steps {
+        timeout(time: 1, unit: 'HOURS') {
+        waitForQualityGate abortPipeline: true
+        }
+      }
     }
-  }
-}
-
 }
 }
