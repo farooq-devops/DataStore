@@ -24,20 +24,15 @@ pipeline {
           """
       }
     }
-      stage("static code analisys") {
-       steps{
-         script {
-            def SonarQubecredentialsId = 'sonarqube'
-            staticCodeAnalysis(SonarQubecredentialsId)
-          }
+     stage("Pushing Artifacts To S3") {
+        steps {
+            sh """
+               echo "------Pushing Artifacts To S3------"
+               aws s3 cp ./target/*.jar s3://datastore-app-jenkins/ 
+               echo "------ Pushing Artifacts To S3 Completed ------"
+               """
         }
     }
-      stage("Quality Gate") {
-       steps {
-        timeout(time: 1, unit: 'HOURS') {
-        waitForQualityGate abortPipeline: true
-        }
-      }
-    }
+
 }
 }
