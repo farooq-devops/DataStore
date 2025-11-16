@@ -1,30 +1,38 @@
 pipeline {
     agent any
+    
+    parameters {
+    string(name: "App_Version", description: "provide application version")
+   }
+
+   environment {
+     DOCKERHUB_CREDENTIALS=credentials("dockerhub")
+    }
     stages {
         stage("Checkout") {
           steps {
             checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/farooq-devops/DataStore.git']])
           }
     }
-        stage("Maven Build") {
-          steps {
+    stage("Maven Build") {
+        steps {
             sh """
               echo "------- Building Apllication ------"
               mvn clean package
               echo "------ Application Built Successfully -------"
-             """
+            """
         }
     }
-      stage("Execute Testcases") {
-        steps {
-         sh """
+     stage("Execute Testcases") {
+      steps {
+        sh """
           echo "-------- Executing Testcases --------"
           mvn test
           echo "-------- Testcases Execution Complete --------"
-          """
+        """
       }
     }
-     stage("Pushing Artifacts To S3") {
+    stage("Pushing Artifacts To S3") {
         steps {
             sh """
                echo "------Pushing Artifacts To S3------"
@@ -33,6 +41,14 @@ pipeline {
                """
         }
     }
-
+    stage("Creating Docker Image") {
+      steps {
+        sh """
+          echo "------ Building Docker Image -------"
+          docker build -t datastore:"${App_Version}" .
+          echo "------ Image Successfully Built -------"
+          """
+      }
+    }
 }
 }
