@@ -59,18 +59,17 @@ pipeline {
         """
       }
     }
-   stage("Loggingin & Pushing Docker image To DockerHub") {
-      steps {
-        sh """
-          echo "-------- Logging To DockerHub --------"
-          docker login -u $DOCKERHUB_CREDENTIALS_USR --password $DOCKERHUB_CREDENTIALS_PSW
-          echo "-------- DockerHub Login Successful --------"
+   stage("Login & Push Docker Image") {
+    steps {
+        script {
+            sh """
+                echo ${DOCKERHUB_CREDS_PSW} | docker login -u ${DOCKERHUB_CREDS_USR} --password-stdin
 
-          echo "-------- Pushing Docker Image To DockerHub --------"
-          docker push datastore:"${App_Version}"
-          echo "-------- Docker Image Pushed Successfully --------"
-        """
-      }
+                docker build -t ${DOCKERHUB_CREDS_USR}/datastore:${App_Version} .
+
+                docker push ${DOCKERHUB_CREDS_USR}/datastore:${App_Version}
+            """
+        }
     }
 }
 }
