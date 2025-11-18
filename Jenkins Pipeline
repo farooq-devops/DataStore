@@ -6,9 +6,6 @@ pipeline {
    }
     environment {
        DOCKERHUB_CREDENTIALS=credentials("dokcerhub")
-       K8S_REPO = 'https://github.com/farooq-devops/jenkinsk8s'
-       IMAGE_REPO = "farooqdevops/datastore"
-       IMAGE_TAG = "${env.BUILD_NUMBER}"
    }
 
     stages {
@@ -93,32 +90,6 @@ pipeline {
         """
       }
     }
-   stage("deploy to k8s") {
-    steps {
-        script {
-            echo "Cloning K8s Manifest Repo..."
-            sh """
-                rm -rf k8s
-                git clone ${K8S_REPO} k8s
-            """
-
-            echo "Updating Manifest Files With New Image Tag..."
-            sh """
-               cd k8s
-               sed -i 's|image: .*$|image: ${IMAGE_REPO}:${IMAGE_TAG}|g' deployment.yaml
-            """
-
-            echo "Commit & Push Back to Git..."
-            sh """
-               cd k8s
-               git config user.email "mohdfarooq2526@gmail.com"
-               git config user.name "jenkins"
-               git add .
-               git commit -m "Updated image to ${IMAGE_REPO}:${IMAGE_TAG}"
-               git push origin main
-            """
-        }
-    }    
-    }
+   
 }
 }
