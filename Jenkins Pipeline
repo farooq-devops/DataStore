@@ -89,7 +89,8 @@ pipeline {
            echo "-------- Clean Up Successful --------"
         """
       }
-    } stage("Deployment Acceptance") {
+    } 
+    stage("Deployment Acceptance") {
       steps {
         input 'Trigger Down Stream Job'
       }
